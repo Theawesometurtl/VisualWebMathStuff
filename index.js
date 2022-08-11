@@ -11,7 +11,7 @@ const jhaty = document.getElementById('form2y');
 
 let listOfVectors = [];
 
-let gridSize = 100;
+let gridSize = 300;
 let centerX = window.innerWidth / 2;
 let centerY = window.innerHeight / 2;
 
@@ -33,8 +33,8 @@ class Vector {
         ctx.strokeStyle = 'purple';
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
-        let x = this.position.x * iHatx + this.position.x * iHaty;
-        let y = this.position.y * jHatx + this.position.y * jHaty;
+        let x = this.position.x * iHatx + this.position.y * jHatx;
+        let y = this.position.x * iHaty + this.position.y * jHaty;
         ctx.lineTo(x + centerX, y + centerY);
         ctx.stroke();
     }
@@ -66,20 +66,28 @@ function main() {
     //normal grid
     ctx.beginPath();
     for (let i = -gridSize; i < gridSize; i+=10) {
-        let x = i * iHatx + i * iHaty;
-        let y = gridSize * jHatx + gridSize * jHaty;
+        let x1 = i * iHatx + gridSize * jHatx;
+        let y1 = i * iHaty + gridSize * jHaty;
 
-        ctx.moveTo(x + centerX, y + centerY);
-        ctx.lineTo(x + centerX, -y + centerY);
+        let x2 = i * iHatx + -gridSize * jHatx;
+        let y2 = i * iHaty + -gridSize * jHaty;
+
+        ctx.moveTo(x1 + centerX, y1 + centerY);
+        ctx.lineTo(x2 + centerX, y2 + centerY);
     }
     ctx.stroke();
 
-    for (let i = 0; i < xSize; i+=10) {
+    for (let i = -gridSize; i < gridSize; i+=10) {
+        let x1 = gridSize * iHatx + i * jHatx;
+        let y1 = gridSize * iHaty + i * jHaty;
 
-        ctx.moveTo();
-        ctx.lineTo();
+        let x2 = -gridSize * iHatx + i * jHatx;
+        let y2 = -gridSize * iHaty + i * jHaty;
+
+        ctx.moveTo(x1 + centerX, y1 + centerY);
+        ctx.lineTo(x2 + centerX, y2 + centerY);
     }
-    //ctx.stroke();
+    ctx.stroke();
 
     //rotated grid
     
@@ -110,8 +118,8 @@ function findMousePos(event) {
 
     console.log(event.clientX - rect.left, event.clientY - rect.top);
     let vector = new Vector();
-    vector.position.x = event.clientX - rect.left;
-    vector.position.y = event.clientY - rect.top;
+    vector.position.x = (event.clientX - rect.left) - centerX;
+    vector.position.y = (event.clientY - rect.top) - centerY;
     listOfVectors.push(vector);
 
 }
