@@ -1,5 +1,7 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 const ihatx = document.getElementById('form1x');
 const ihaty = document.getElementById('form1y');
 const jhatx = document.getElementById('form2x');
@@ -9,31 +11,19 @@ const jhaty = document.getElementById('form2y');
 
 let listOfVectors = [];
 
-let xSize = 1000;
-let ySize = 1000;
-let centerX = xSize / 2;
-let centerY = ySize / 2;
+let gridSize = 100;
+let centerX = window.innerWidth / 2;
+let centerY = window.innerHeight / 2;
 
-let jHatx = 0;
-let jHaty = 1;
 let iHatx = 1;
 let iHaty = 0;
-
-canvas.width = xSize;
-canvas.height = ySize;
+let jHatx = 0;
+let jHaty = 1;
 
 
 ctx.strokeStyle = 'black';
 ctx.lineWidth = 1;
 
-ctx.beginPath();
-ctx.moveTo(0, centerY);
-ctx.lineTo(xSize, centerY);
-ctx.stroke();
-
-ctx.moveTo(centerX, 0);
-ctx.lineTo(centerX, ySize);
-ctx.stroke();
 
 class Vector {
     constructor() {
@@ -43,7 +33,9 @@ class Vector {
         ctx.strokeStyle = 'purple';
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
-        ctx.lineTo(this.position.x * iHatx + this.position.y * jHatx, this.position.x * iHaty + this.position.y * jHaty);
+        let x = this.position.x * iHatx + this.position.x * iHaty;
+        let y = this.position.y * jHatx + this.position.y * jHaty;
+        ctx.lineTo(x + centerX, y + centerY);
         ctx.stroke();
     }
 }
@@ -73,19 +65,19 @@ function main() {
 
     //normal grid
     ctx.beginPath();
-    for (let i = 0; i < xSize; i+=10) {
-        let x = (xSize * iHatx) + (i * jHatx);
-        let y = (xSize * iHaty) + (i * jHaty);
-        ctx.moveTo(-x + i, -y + centerY);
-        ctx.lineTo(x + i, y + centerY);
+    for (let i = -gridSize; i < gridSize; i+=10) {
+        let x = i * iHatx + i * iHaty;
+        let y = gridSize * jHatx + gridSize * jHaty;
+
+        ctx.moveTo(x + centerX, y + centerY);
+        ctx.lineTo(x + centerX, -y + centerY);
     }
     ctx.stroke();
 
     for (let i = 0; i < xSize; i+=10) {
-        let x = (i * iHatx) + (ySize * jHatx);
-        let y = (i * iHaty) + (ySize * jHaty);
-        ctx.moveTo(-x + centerX, -y + i);
-        ctx.lineTo(x + centerX, y + i);
+
+        ctx.moveTo();
+        ctx.lineTo();
     }
     //ctx.stroke();
 
