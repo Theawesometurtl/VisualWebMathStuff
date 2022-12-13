@@ -1,0 +1,46 @@
+h2 {
+    color: #ff0000;
+    animation: rainbow 5s linear infinite;
+  }
+  
+  @keyframes rainbow {
+    0% {
+      color: #ff0000;
+    }
+    16.66% {
+      color: #ff7f00;
+    }
+    33.32% {
+      color: #ffff00;
+    }
+    49.98% {
+      color: #00ff00;
+    }
+    66.64% {
+      color: #0000ff;
+    }
+    83.30% {
+      color: #4b0082;
+    }
+    100% {
+      color: #9400d3;
+    }
+  }
+
+  img.spinning-cat {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    animation: spin 5s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
