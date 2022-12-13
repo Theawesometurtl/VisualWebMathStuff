@@ -4,6 +4,3 @@ function clickCheese() {
   score += 1;
   document.getElementById("score").innerHTML = score;
 }
-
-
-
