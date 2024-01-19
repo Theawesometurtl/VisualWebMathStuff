@@ -2,16 +2,13 @@ const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-const scale = 10
+const scale = 7
 const ampPadding = 10
 
-const pailLength = document.getElementById('formPailLength');
-const pivotDistance = document.getElementById('formPivotDistance');
-const pivotHeight = document.getElementById('formPivotHeight');
-const pnematicLength = document.getElementById('formPnematicLength');
-const sourceAngle = document.getElementById('formSourceAngle');
-const ampAngle = document.getElementById('formAmpAngle');
+
+
 const errorMessage = document.getElementById('errorMessage');
+const defaultPosition = document.getElementById('defaultPosition');
 
 const pivotWidth = 2 * scale;
 const chassisLength = 20 * scale;
@@ -27,42 +24,115 @@ const ampHeight = 48 * scale;
 const ampWidth = 12 * scale;
 const ampFront = ampPadding + ampWidth;
 
+const modeSeperation = sourceFront + bumperLength*2 + chassisLength + ampPadding;
+
+const sourceHeight = 52 * scale;
+const sourceWidth = 13.42 *scale;
+const sourceOpeningHeight = 36.75 * scale;
+const sourceChuteSize = 6 * scale;
+const sourceFront = ampPadding + sourceWidth;
+
+window.pailLength = 0
+window.pivotDistance = 0
+window.pivotHeight = 0
+window.pnematicLength =0
+window.sourceAngle = 0
+window.ampAngle = 0
+
 class PailBot {
     constructor() {
-        this.pailEnd = { x: 0, y: 0 };
-        this.pailStart = { x: 0, y: 0 };   
+        this.pailEndSource = { x: 0, y: 0 };
+        this.pailStartSource = { x: 0, y: 0 };   
+        this.pailEndAmp = { x: 0, y: 0 };
+        this.pailStartAmp = { x: 0, y: 0 };   
+        this.defaultPailAngle = 0;
+    }
+    errorCheck() {
+        let lengths = {'Pail Length': pailLength, 'Pivot Distance': pivotDistance, 'Pivot Height': pivotHeight, 'Pnematic Length':pnematicLength}
+        for (const [key, value] of Object.entries(lengths)) {
+            if (value < 0) {
+                let message = key +' perameter must be positive'
+                error(message);
+            }
+        }
+
+        if (this.pailStartAmp + this.pivotHeight < ampBottomPocketHeight) {
+            error('The Amp Pail is too low');
+        }
+        if (this.pailStartSource + this.pivotHeight > sourceOpeningHeight) {
+            error('The Source Pail is too high');
+        }
     }
     updatePail() {
-        if (pailLength * Math.cos(sourceAngle) < pivotDistance) {
+        if (defaultPosition.selectedIndex === 0) {
+        this.defaultPailAngle = sourceAngle;
+        } else if (defaultPosition.selectedIndex === 1) {
+            this.defaultPailAngle = ampAngle;
+        } else if (defaultPosition.selectedIndex === 2) {
+            this.defaultPailAngle = toRadian(0);
+        } else if (defaultPosition.selectedIndex === 3) {
+            this.defaultPailAngle = speakerAngle;
+        } else {console.error('what the hell, defaultPosition.selectedIndex = ' + defaultPosition.selectedIndex);}
+
+        if (pailLength * Math.cos(Math.abs(this.defaultPailAngle)) < pivotDistance) {
             error("Pivot too far");
         } else {
-            this.pailEnd.x = pailLength - pivotDistance
+            //source
+            let pivotDistanceOnPail = pivotDistance / Math.cos(Math.abs(this.defaultPailAngle)); //h = a/cos(0)
+            this.pailStartSource.x = pivotDistance - pivotDistanceOnPail * Math.cos(Math.abs(sourceAngle)); //a = h * cos(0)
+            this.pailStartSource.y = pivotHeight + Math.sin(sourceAngle) * pivotDistanceOnPail; //sin(0)*h = o
+            this.pailEndSource.x = pivotDistance + (pailLength-pivotDistanceOnPail) * Math.cos(Math.abs(sourceAngle)); //a = h* cos(0)
+            this.pailEndSource.y = pivotHeight - Math.sin(sourceAngle) * (pailLength-pivotDistanceOnPail); //sin(0)*h = o
+
+            //amp
+            this.pailStartAmp.x = pivotDistance - pivotDistanceOnPail * Math.cos(Math.abs(ampAngle)); //a = h * cos(0)
+            this.pailStartAmp.y = pivotHeight + Math.sin(ampAngle) * pivotDistanceOnPail; //sin(0)*h = o
+            this.pailEndAmp.x = pivotDistance + (pailLength-pivotDistanceOnPail) * Math.cos(Math.abs(ampAngle)); //a = h* cos(0)
+            this.pailEndAmp.y = pivotHeight - Math.sin(ampAngle) * (pailLength-pivotDistanceOnPail); //sin(0)*h = o
         }
     }
     draw() {
-        ctx.strokeStyle = 'purple';
-        ctx.beginPath();
-        ctx.moveTo(this.pailStart.x, this.pailStart.y);
-        ctx.lineTo(this.pailEnd.x, this.pailEnd.y);
-        ctx.stroke();
-
-        //bumpers
-        ctx.strokeStyle = 'green';
-        ctx.fillStyle = 'green';
-        //front bumper
-        ctx.fillRect(ampFront, canvas.height - bumperHeight, bumperLength, bumperHeight);
-        //back bumper
-        ctx.fillRect(ampFront + bumperLength + chassisLength, canvas.height -bumperHeight, bumperLength, bumperHeight);
-
-        //chassis
-        ctx.strokeStyle = 'gray';
-        ctx.fillStyle = 'gray';
-        ctx.fillRect(ampFront + bumperLength, canvas.height -chassisHeight, chassisLength, chassisHeight)
-
+        
         //pivot
         ctx.strokeStyle = 'black';
         ctx.fillStyle= 'black';
         ctx.fillRect(ampFront + bumperLength + pivotDistance - pivotWidth/2, canvas.height -pivotHeight, pivotWidth, pivotHeight);
+
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle= 'black';
+        ctx.fillRect(sourceFront + bumperLength + pivotDistance - pivotWidth/2, canvas.height -pivotHeight -ampHeight -ampPadding, pivotWidth, pivotHeight);
+        
+        //bumpers
+        ctx.lineWidth = .5;
+        ctx.strokeStyle = 'green';
+        ctx.fillStyle = 'green';
+        //front bumper
+        ctx.fillRect(ampFront, canvas.height - bumperHeight, bumperLength, bumperHeight);
+        ctx.fillRect(sourceFront, canvas.height - bumperHeight  -ampHeight -ampPadding, bumperLength, bumperHeight);
+        //back bumper
+        ctx.fillRect(ampFront + bumperLength + chassisLength, canvas.height -bumperHeight, bumperLength, bumperHeight);
+        ctx.fillRect(sourceFront + bumperLength + chassisLength, canvas.height -bumperHeight  -ampHeight -ampPadding, bumperLength, bumperHeight);
+        
+        //chassis
+        ctx.strokeStyle = 'gray';
+        ctx.fillStyle = 'gray';
+        ctx.fillRect(ampFront + bumperLength, canvas.height -chassisHeight, chassisLength, chassisHeight)
+        ctx.fillRect(sourceFront + bumperLength, canvas.height -chassisHeight  -ampHeight -ampPadding, chassisLength, chassisHeight)
+        
+        //pail
+        ctx.strokeStyle = 'purple';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(this.pailStartSource.x + sourceFront + bumperLength, canvas.height -this.pailStartSource.y -ampHeight -ampPadding);
+        ctx.lineTo(this.pailEndSource.x + sourceFront + bumperLength, canvas.height -this.pailEndSource.y -ampHeight -ampPadding);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(this.pailStartAmp.x + ampFront + bumperLength, canvas.height -this.pailStartAmp.y);
+        ctx.lineTo(this.pailEndAmp.x + ampFront + bumperLength, canvas.height -this.pailEndAmp.y);
+        ctx.stroke();
+
+        //piston
+        ctx.strokeStyle = 'silver';
 
     }
 }
@@ -70,19 +140,32 @@ class PailBot {
 let pailBot = new PailBot()
 
 function hideError() {
-    errorMessage.display = 'none';
-    errorMessage.text = "Error: "
+    errorMessage.style.display = 'none';
+    errorMessage.innerHTML = "Error: "
 }
 function error(message) {
-    errorMessage.display = 'block';
-    errorMessage.text += message + '\n';
+    errorMessage.style.display = 'block';
+    errorMessage.innerHTML += message + '\n';
+}
+
+function toRadian(degrees)
+{
+  return degrees * (Math.PI/180);
 }
 
 function main() {
     hideError();
+    pailBot.errorCheck();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = 'black';
     ctx.lineWidth = .5;
+
+    window.pailLength = parseInt(document.getElementById('formPailLength').value) * scale;
+    window.pivotDistance = parseInt(document.getElementById('formPivotDistance').value) * scale;
+    window.pivotHeight = parseInt(document.getElementById('formPivotHeight').value) * scale;
+    window.pnematicLength = parseInt(document.getElementById('formPnematicLength').value) * scale;
+    window.sourceAngle = toRadian(parseInt(document.getElementById('formSourceAngle').value));
+    window.ampAngle = toRadian(parseInt(document.getElementById('formAmpAngle').value));
 
     //amp
     
@@ -99,6 +182,18 @@ function main() {
     ctx.fillStyle = '#8a241d';
     ctx.fill();
 
+    //source
+    ctx.fillStyle = '#57b4f2';
+    ctx.strokeStyle = '#57b4f2';
+    ctx.beginPath();
+    ctx.moveTo(ampPadding, canvas.height -ampHeight -ampPadding);
+    ctx.lineTo(ampPadding, canvas.height -ampHeight -ampPadding -sourceHeight);
+    ctx.lineTo(ampPadding + sourceWidth, canvas.height - sourceOpeningHeight -ampHeight -ampPadding);
+    ctx.lineTo(ampPadding + sourceWidth, canvas.height -ampHeight -ampPadding);
+    ctx.stroke();
+    ctx.fill();
+
+    pailBot.updatePail();
     pailBot.draw();
 
 }
