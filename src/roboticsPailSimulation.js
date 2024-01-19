@@ -24,13 +24,14 @@ const ampHeight = 48 * scale;
 const ampWidth = 12 * scale;
 const ampFront = ampPadding + ampWidth;
 
-const modeSeperation = sourceFront + bumperLength*2 + chassisLength + ampPadding;
 
 const sourceHeight = 52 * scale;
 const sourceWidth = 13.42 *scale;
 const sourceOpeningHeight = 36.75 * scale;
 const sourceChuteSize = 6 * scale;
 const sourceFront = ampPadding + sourceWidth;
+
+const modeSeperation = sourceFront + bumperLength*2 + chassisLength + ampPadding;
 
 window.pailLength = 0
 window.pivotDistance = 0
