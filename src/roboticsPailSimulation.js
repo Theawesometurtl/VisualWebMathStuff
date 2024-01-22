@@ -57,12 +57,13 @@ class PailBot {
             }
         }
 
-        if (this.pailStartAmp + this.pivotHeight < ampBottomPocketHeight) {
+        if (this.pailStartAmp.y < ampBottomPocketHeight) {
             error('The Amp Pail is too low');
         }
-        if (this.pailStartSource + this.pivotHeight > sourceOpeningHeight) {
+        if (this.pailStartSource.y > sourceOpeningHeight) {
             error('The Source Pail is too high');
         }
+        console.log(this.pailStartAmp.y, pivotHeight, ampBottomPocketHeight, this.pailStartSource.y, pivotHeight, sourceOpeningHeight);
     }
     updatePail() {
         if (defaultPosition.selectedIndex === 0) {
@@ -164,7 +165,7 @@ function main() {
     window.pailLength = parseInt(document.getElementById('formPailLength').value) * scale;
     window.pivotDistance = parseInt(document.getElementById('formPivotDistance').value) * scale;
     window.pivotHeight = parseInt(document.getElementById('formPivotHeight').value) * scale;
-    window.pnematicLength = parseInt(document.getElementById('formPnematicLength').value) * scale;
+    // window.pnematicLength = parseInt(document.getElementById('formPnematicLength').value) * scale;
     window.sourceAngle = toRadian(parseInt(document.getElementById('formSourceAngle').value));
     window.ampAngle = toRadian(parseInt(document.getElementById('formAmpAngle').value));
 
