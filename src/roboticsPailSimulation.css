@@ -12,3 +12,8 @@ input[type='number']{
     color: red;
     display: none;
 }
+#description{
+    font-family: "Times New Roman", Times, serif;
+    padding-left: 5%;
+    padding-right: 40%;
+}

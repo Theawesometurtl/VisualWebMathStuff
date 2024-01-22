@@ -63,7 +63,6 @@ class PailBot {
         if (this.pailStartSource.y > sourceOpeningHeight) {
             error('The Source Pail is too high');
         }
-        console.log(this.pailStartAmp.y, pivotHeight, ampBottomPocketHeight, this.pailStartSource.y, pivotHeight, sourceOpeningHeight);
     }
     updatePail() {
         if (defaultPosition.selectedIndex === 0) {
