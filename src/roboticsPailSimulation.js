@@ -9,12 +9,13 @@ const ampPadding = 10
 
 const errorMessage = document.getElementById('errorMessage');
 const defaultPosition = document.getElementById('defaultPosition');
+const pivotDistanceOnPailElement = document.getElementById('pivotDistanceOnPail');
 
 const pivotWidth = 2 * scale;
-const chassisLength = 20 * scale;
-const bumperLength = 3 * scale;
+const chassisLength = 32 * scale;
+const bumperLength = 3.5 * scale;
 const bumperHeight = 8 * scale;
-const chassisHeight = 7 * scale;
+const chassisHeight = 4.5 * scale;
 
 const ampPocketDepth = 3.775 * scale;
 const ampTopPocketHeight = 44 * scale;
@@ -80,6 +81,7 @@ class PailBot {
         } else {
             //source
             let pivotDistanceOnPail = pivotDistance / Math.cos(Math.abs(this.defaultPailAngle)); //h = a/cos(0)
+            pivotDistanceOnPailElement.innerHTML = 'Distance pivot is on the pail:' + (pivotDistanceOnPail/scale);
             this.pailStartSource.x = pivotDistance - pivotDistanceOnPail * Math.cos(Math.abs(sourceAngle)); //a = h * cos(0)
             this.pailStartSource.y = pivotHeight + Math.sin(sourceAngle) * pivotDistanceOnPail; //sin(0)*h = o
             this.pailEndSource.x = pivotDistance + (pailLength-pivotDistanceOnPail) * Math.cos(Math.abs(sourceAngle)); //a = h* cos(0)
@@ -90,6 +92,7 @@ class PailBot {
             this.pailStartAmp.y = pivotHeight + Math.sin(ampAngle) * pivotDistanceOnPail; //sin(0)*h = o
             this.pailEndAmp.x = pivotDistance + (pailLength-pivotDistanceOnPail) * Math.cos(Math.abs(ampAngle)); //a = h* cos(0)
             this.pailEndAmp.y = pivotHeight - Math.sin(ampAngle) * (pailLength-pivotDistanceOnPail); //sin(0)*h = o
+            // console.log(this.pailStartAmp.x/scale, this.pailStartAmp.y/scale, this.pailEndAmp.x/scale, this.pailEndAmp.y/scale, this.pailStartSource.x/scale, this.pailStartSource.y/scale, this.pailEndSource.x/scale, this.pailEndSource.y/scale);
         }
     }
     draw() {
@@ -161,12 +164,12 @@ function main() {
     ctx.strokeStyle = 'black';
     ctx.lineWidth = .5;
 
-    window.pailLength = parseInt(document.getElementById('formPailLength').value) * scale;
-    window.pivotDistance = parseInt(document.getElementById('formPivotDistance').value) * scale;
-    window.pivotHeight = parseInt(document.getElementById('formPivotHeight').value) * scale;
+    window.pailLength = document.getElementById('formPailLength').value * scale;
+    window.pivotDistance = document.getElementById('formPivotDistance').value * scale;
+    window.pivotHeight = document.getElementById('formPivotHeight').value * scale;
     // window.pnematicLength = parseInt(document.getElementById('formPnematicLength').value) * scale;
-    window.sourceAngle = toRadian(parseInt(document.getElementById('formSourceAngle').value));
-    window.ampAngle = toRadian(parseInt(document.getElementById('formAmpAngle').value));
+    window.sourceAngle = toRadian(document.getElementById('formSourceAngle').value);
+    window.ampAngle = toRadian(document.getElementById('formAmpAngle').value);
 
     //amp
     
